@@ -1,45 +1,71 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { createStaticNavigation } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { HomeScreen } from './pages/home';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { Button, TouchableOpacity, useColorScheme, Text } from 'react-native';
+import Screens from './common/screens';
+import { SplashScreen } from './pages/splash';
+import { SignInScreen } from './pages/sign-in';
+import { SignUpScreen } from './pages/sign-up';
+import { AppColors } from './common/color';
+import { ThemeProvider, useTheme } from './common/theme';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+  const theme = useColorScheme()
+
+  const rootStack = createNativeStackNavigator({
+    initialRouteName: Screens.SPLASH,
+    screenOptions: {
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? AppColors.dark.background : AppColors.light.background,
+      },
+      headerTitleStyle: {
+        color: theme === 'dark' ? AppColors.dark.textColor : AppColors.light.textColor,
+      }
+    },
+    screens: {
+      HOME: {
+        screen: HomeScreen,
+        title: "Chat's",
+        options: {
+          headerShown: true
+        }
+      },
+      SIGN_IN: {
+        screen: SignInScreen,
+        title: "Sign In",
+        options: {
+          headerShown: false
+        }
+      },
+      SIGN_UP: {
+        screen: SignUpScreen,
+        title: "Sign Up",
+        options: {
+          headerShown: false
+        }
+      },
+      SPLASH: {
+        screen: SplashScreen,
+        options: {
+          headerShown: false,
+        }
+      }
+    }
+  })
+
+  const Navigation = createStaticNavigation(rootStack)
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <ThemeProvider>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme === 'dark' ? AppColors.dark.background : AppColors.light.background }}>
+          <Navigation />
+        </SafeAreaView>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;
