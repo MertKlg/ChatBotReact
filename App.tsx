@@ -1,67 +1,40 @@
-import { createStaticNavigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from './pages/home';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { Button, TouchableOpacity, useColorScheme, Text } from 'react-native';
-import Screens from './common/screens';
+import { useColorScheme } from 'react-native';
 import { SplashScreen } from './pages/splash';
 import { SignInScreen } from './pages/sign-in';
 import { SignUpScreen } from './pages/sign-up';
 import { AppColors } from './common/color';
-import { ThemeProvider, useTheme } from './common/theme';
+import { ThemeProvider } from './common/theme';
+import { ChatDetail } from './pages/chat-detail';
+import { RootStackNavigatorList } from './model/navigator';
+import { HeaderBackground } from '@react-navigation/elements';
+import { CreateChat } from './pages/chat/create';
 
 
 function App() {
   const theme = useColorScheme()
 
-  const rootStack = createNativeStackNavigator({
-    initialRouteName: Screens.SPLASH,
-    screenOptions: {
-      headerStyle: {
-        backgroundColor: theme === 'dark' ? AppColors.dark.background : AppColors.light.background,
-      },
-      headerTitleStyle: {
-        color: theme === 'dark' ? AppColors.dark.textColor : AppColors.light.textColor,
-      }
-    },
-    screens: {
-      HOME: {
-        screen: HomeScreen,
-        title: "Chat's",
-        options: {
-          headerShown: true
-        }
-      },
-      SIGN_IN: {
-        screen: SignInScreen,
-        title: "Sign In",
-        options: {
-          headerShown: false
-        }
-      },
-      SIGN_UP: {
-        screen: SignUpScreen,
-        title: "Sign Up",
-        options: {
-          headerShown: false
-        }
-      },
-      SPLASH: {
-        screen: SplashScreen,
-        options: {
-          headerShown: false,
-        }
-      }
-    }
-  })
-
-  const Navigation = createStaticNavigation(rootStack)
+  const Stack = createNativeStackNavigator<RootStackNavigatorList>()
+  const background = theme === 'dark' ? AppColors.dark.background : AppColors.light.background
+  const tintColor = theme === 'dark' ? AppColors.dark.textColor : AppColors.light.textColor
 
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <SafeAreaView style={{ flex: 1, backgroundColor: theme === 'dark' ? AppColors.dark.background : AppColors.light.background }}>
-          <Navigation />
+        <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName='Splash'>
+              <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false }} />
+              <Stack.Screen name='Home' component={HomeScreen} options={({ navigation }) => ({ headerShown: true, headerTintColor: tintColor, headerBackground: () => <HeaderBackground style={{ backgroundColor: background }} /> })} />
+              <Stack.Screen name='SignIn' component={SignInScreen} options={{ headerShown: false }} />
+              <Stack.Screen name='SignUp' component={SignUpScreen} options={{ headerShown: false }} />
+              <Stack.Screen name='ChatDetail' component={ChatDetail} options={({ route }) => ({ title: route.params.chat?.title ?? "No chat founded", headerBackTitle: "Back", headerShown: true, headerTintColor: tintColor, headerBackground: () => <HeaderBackground style={{ backgroundColor: background }} /> })} />
+              <Stack.Screen name='CreateChat' component={CreateChat} options={{ headerBackTitle: "Back", title: "Create Chat", headerShown: true, headerTintColor: tintColor, headerBackground: () => <HeaderBackground style={{ backgroundColor: background }} /> }} />
+            </Stack.Navigator>
+          </NavigationContainer>
         </SafeAreaView>
       </ThemeProvider>
     </SafeAreaProvider>

@@ -3,7 +3,7 @@ import { styles } from "../common/global-styles"
 import { useTheme } from "../common/theme"
 import AppTextInput from "../component/text-input/text-input"
 import { useState } from "react"
-import request from "../common/api"
+import request, { apiClientWithHandler } from "../common/api"
 import { ErrorDetails } from "../model/response"
 import { useNavigation } from "@react-navigation/native"
 import { Screen } from "react-native-screens"
@@ -27,7 +27,7 @@ export const SignUpScreen = () => {
 
     // Send form
     const signUp = async () => {
-        const res = await request({
+        const res = await apiClientWithHandler({
             url: "/auth/sign-up", body: {
                 username,
                 email,

@@ -1,24 +1,21 @@
-import { Alert, Button, FlatList, Text, TextInput, View } from "react-native"
+import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native"
 import { styles } from "../common/global-styles"
 import { useEffect, useState } from "react"
-import request, { refresh } from "../common/api"
-import * as Keychain from "react-native-keychain";
+import request from "../common/api"
 import authStorage from "../storage/auth-storage";
 import { useTheme } from "../common/theme";
-import { useNavigation } from "@react-navigation/native";
 import IChat from "../model/chat";
-import { Screen } from "react-native-screens";
-import Screens from "../common/screens";
-import chatItem from "../component/card/chat-item";
 import ChatItem from "../component/card/chat-item";
-import { getAppInfo } from "react-native/types_generated/Libraries/LogBox/Data/LogBoxData";
+import { RootStackNavigatorList } from "../model/navigator";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 
-export const HomeScreen = () => {
+type Props = NativeStackScreenProps<RootStackNavigatorList, 'Home'>
+
+export const HomeScreen = ({ navigation }: Props) => {
 
     const { getAccessToken } = authStorage()
     const theme = useTheme()
-    const navivation = useNavigation()
     const [chat, setChat] = useState<IChat[]>()
 
     useEffect(() => {
@@ -29,30 +26,19 @@ export const HomeScreen = () => {
 
     const getChats = async () => {
         // Get users chat's
-        const token = getAccessToken()
-        console.log(token)
-        const result = await request<{ chats: IChat[] }>({ url: "/chat/get", header: { Authorization: `Bearer ${token}` }, method: "GET" })
-        if (result.error) {
-            if (result.error.status == 401) {
-                const refreshResult = await refresh()
-                if (refreshResult.error?.status == 401) {
-                    Alert.alert("Profile ended")
-                    navivation.replace(Screens.SIGN_IN)
-                    return
-                }
-            }
-        } else {
-            setChat(result.data?.chats)
-        }
+
     }
 
     return (
         <View style={[styles.screen, { backgroundColor: theme.background }]}>
+            <TouchableOpacity onPress={() => navigation.navigate('CreateChat')}>
+                <Text style={[styles.BODY_LARGE, { color: theme.textColor2, padding: 24, backgroundColor: theme.secondary[500], borderRadius: 4, textAlign: "center" }]} >Create</Text>
+            </TouchableOpacity>
             <FlatList
                 data={chat}
-                renderItem={(e) => <ChatItem chat={e.item} />}
+                renderItem={(e) => <ChatItem chat={e.item} navigation={navigation} />}
                 keyExtractor={item => item.id}
             />
-        </View>
+        </View >
     )
 }

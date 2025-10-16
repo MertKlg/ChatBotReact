@@ -1,18 +1,21 @@
 import { Alert, Image, Text, TouchableOpacity, useWindowDimensions, View } from "react-native"
 import { styles } from "../common/global-styles"
 import { useTheme } from "../common/theme"
-import { useNavigation } from "@react-navigation/native"
 import AppTextInput from "../component/text-input/text-input"
-import request from "../common/api"
+import request, { apiClientWithHandler, apiRequest } from "../common/api"
 import { useState } from "react"
 import { ErrorDetails } from "../model/response"
 import * as Keychain from "react-native-keychain";
-import Screens from "../common/screens"
 import authStorage from "../storage/auth-storage"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { RootStackNavigatorList } from "../model/navigator"
+import apiClient from "../common/api"
+import { AxiosError } from "axios"
 
-export const SignInScreen = () => {
+type Props = NativeStackScreenProps<RootStackNavigatorList, 'SignIn'>
+
+export const SignInScreen = ({ navigation }: Props) => {
     const theme = useTheme()
-    const navigation = useNavigation()
     const dimension = useWindowDimensions()
     const { setAccessToken } = authStorage()
     const height = dimension.height
@@ -24,29 +27,24 @@ export const SignInScreen = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const signIn = async () => {
-        try {
-            if (!email || !password) {
-                Alert.alert("Email or password won't be empty")
-                return
-            }
+        if (!email || !password) {
+            Alert.alert("Email or password won't be empty")
+            return
+        }
 
-            const res = await request({ url: '/auth/sign-in', method: "POST", body: { client: "mobile-react", email, password } })
-            if (res.error) {
-                if (res.error.details && Object.keys(res.error.details).length > 0) {
-                    setErrors(res.error.details as ErrorDetails)
-                } else {
-                    Alert.alert(res.error.message)
-                }
+        const res = await apiClientWithHandler({ url: "/auth/sign-in", method: "POST", body: { client: "mobile-react", email, password } })
+        if (res.error) {
+            if (res.error.details && Object.keys(res.error.details).length > 0) {
+                setErrors(res.error.details as ErrorDetails)
             } else {
-                const tokens = res.data as { access_token: string, refresh_token: string }
-                setAccessToken(tokens.access_token)
-                await Keychain.setGenericPassword("refresh_token", tokens.refresh_token, { accessible: Keychain.ACCESSIBLE.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY })
-                // If user sign in with successfully route home page
-                navigation.replace(Screens.HOME)
+                Alert.alert(res.error.message)
             }
-        } catch (error) {
-            Alert.alert("Something went wrong")
-            console.error(error)
+        } else {
+            const tokens = res.data as { access_token: string, refresh_token: string }
+            setAccessToken(tokens.access_token)
+            await Keychain.setGenericPassword("refresh_token", tokens.refresh_token, { accessible: Keychain.ACCESSIBLE.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY })
+            // If user sign in with successfully route home page
+            navigation.replace("Home")
         }
     }
 
@@ -103,7 +101,7 @@ export const SignInScreen = () => {
                             You don’t have a any account?
                         </Text>
 
-                        <TouchableOpacity onPress={() => { navigation.navigate(Screens.SIGN_UP) }}>
+                        <TouchableOpacity onPress={() => { navigation.navigate("SignIn") }}>
                             <Text style={[styles.LABEL_MEDIUM, { color: theme.secondary[500] }]}>
                                 Sign Up
                             </Text>

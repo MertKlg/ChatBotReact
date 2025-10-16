@@ -7,7 +7,7 @@ export const AppThemeContext = createContext<AppTheme | undefined>(undefined);
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const scheme = useColorScheme();
   const theme = scheme === COLOR_SCHEME.LIGHT ? AppColors.light : AppColors.dark;
-  
+
   return (
     <AppThemeContext.Provider value={theme}>
       {children}

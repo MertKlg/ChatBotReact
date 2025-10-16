@@ -1,5 +1,6 @@
 import { AxiosError } from "axios"
 import { IErrorResponse } from "../model/response"
+import { createJSONStorage } from "zustand/middleware"
 
 const normalizeError = (error: unknown): IErrorResponse => {
     if (error instanceof AxiosError) {
