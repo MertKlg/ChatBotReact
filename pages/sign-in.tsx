@@ -2,15 +2,13 @@ import { Alert, Image, Text, TouchableOpacity, useWindowDimensions, View } from 
 import { styles } from "../common/global-styles"
 import { useTheme } from "../common/theme"
 import AppTextInput from "../component/text-input/text-input"
-import request, { apiClientWithHandler, apiRequest } from "../common/api"
+import { apiClientWithHandler } from "../common/api"
 import { useState } from "react"
 import { ErrorDetails } from "../model/response"
 import * as Keychain from "react-native-keychain";
 import authStorage from "../storage/auth-storage"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { RootStackNavigatorList } from "../model/navigator"
-import apiClient from "../common/api"
-import { AxiosError } from "axios"
 
 type Props = NativeStackScreenProps<RootStackNavigatorList, 'SignIn'>
 

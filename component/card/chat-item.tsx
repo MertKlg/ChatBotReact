@@ -13,7 +13,7 @@ export default ({ chat, navigation }: { chat: IChat, navigation: NativeStackNavi
         <TouchableOpacity onPress={() => {
             navigation.navigate("ChatDetail", { chat: chat })
         }}>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%", backgroundColor: theme.surface, borderRadius: 4, marginTop: 4, marginBottom: 4, padding: 12 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%", backgroundColor: theme.surface, borderRadius: 4, marginTop: 4, padding: 12 }}>
                 <View>
                     <Text style={[styles.HEADLINE_SMALL, { color: theme.textColor }]}>{chat.title}</Text>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>

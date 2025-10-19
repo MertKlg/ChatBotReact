@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from './pages/home';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { useColorScheme } from 'react-native';
+import { Button, useColorScheme } from 'react-native';
 import { SplashScreen } from './pages/splash';
 import { SignInScreen } from './pages/sign-in';
 import { SignUpScreen } from './pages/sign-up';
@@ -12,6 +12,7 @@ import { ChatDetail } from './pages/chat-detail';
 import { RootStackNavigatorList } from './model/navigator';
 import { HeaderBackground } from '@react-navigation/elements';
 import { CreateChat } from './pages/chat/create';
+import { ProfileScreen } from './pages/profile/profile';
 
 
 function App() {
@@ -28,11 +29,35 @@ function App() {
           <NavigationContainer>
             <Stack.Navigator initialRouteName='Splash'>
               <Stack.Screen name='Splash' component={SplashScreen} options={{ headerShown: false }} />
-              <Stack.Screen name='Home' component={HomeScreen} options={({ navigation }) => ({ headerShown: true, headerTintColor: tintColor, headerBackground: () => <HeaderBackground style={{ backgroundColor: background }} /> })} />
+              <Stack.Screen name='Home' component={HomeScreen} options={({ navigation }) => ({
+                headerShown: true,
+                headerTintColor: tintColor,
+                headerBackground: () => <HeaderBackground style={{ backgroundColor: background }} />,
+                headerRight: () => <Button title='Profile' onPress={() => navigation.navigate('Profile')} />
+              })} />
               <Stack.Screen name='SignIn' component={SignInScreen} options={{ headerShown: false }} />
               <Stack.Screen name='SignUp' component={SignUpScreen} options={{ headerShown: false }} />
-              <Stack.Screen name='ChatDetail' component={ChatDetail} options={({ route }) => ({ title: route.params.chat?.title ?? "No chat founded", headerBackTitle: "Back", headerShown: true, headerTintColor: tintColor, headerBackground: () => <HeaderBackground style={{ backgroundColor: background }} /> })} />
-              <Stack.Screen name='CreateChat' component={CreateChat} options={{ headerBackTitle: "Back", title: "Create Chat", headerShown: true, headerTintColor: tintColor, headerBackground: () => <HeaderBackground style={{ backgroundColor: background }} /> }} />
+              <Stack.Screen name='Profile' component={ProfileScreen} options={({ navigation }) => ({
+                headerBackground: () => <HeaderBackground style={{ backgroundColor: background }} />,
+                headerBackTitle: 'Back',
+                headerTintColor: tintColor
+              })} />
+              <Stack.Screen name='ChatDetail' component={ChatDetail}
+                options={({ route }) => ({
+                  title: route.params.chat?.title ?? "No chat founded",
+                  headerBackTitle: "Back",
+                  headerShown: true,
+                  headerTintColor: tintColor,
+                  headerBackground: () => <HeaderBackground style={{ backgroundColor: background }} />
+                })} />
+              <Stack.Screen name='CreateChat' component={CreateChat}
+                options={{
+                  headerBackTitle: "Back",
+                  title: "Create Chat",
+                  headerShown: true,
+                  headerTintColor: tintColor,
+                  headerBackground: () => <HeaderBackground style={{ backgroundColor: background }} />
+                }} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>

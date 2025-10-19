@@ -4,14 +4,7 @@ import normalizeError from "./error-handler";
 import * as Keychain from "react-native-keychain";
 import authStorage from "../storage/auth-storage";
 
-interface Request {
-    url: string,
-    method: 'GET' | 'POST' | 'UPDATE' | 'DELETE',
-    body?: {},
-    header?: RawAxiosRequestHeaders,
-}
-
-const API_BASE_URL = "http://127.0.2.2:3000"
+const API_BASE_URL = "http://127.0.0.1:3000"
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -77,6 +70,7 @@ apiClient.interceptors.response.use((response) => response, async (error: AxiosE
         )
 
         const { access_token, refresh_token } = refreshResponse.data
+        console.log(access_token, refresh_token)
 
         await Keychain.setGenericPassword("refresh_token", refresh_token)
         authStorage.getState().setAccessToken(access_token)
@@ -90,7 +84,6 @@ apiClient.interceptors.response.use((response) => response, async (error: AxiosE
         await Keychain.resetGenericPassword();
 
         processQueue(refreshError as AxiosError, null);
-        authStorage.getState().logOut()
         return Promise.reject(refreshError);
     } finally {
         isRefreshing = false
@@ -103,22 +96,6 @@ interface IRequest {
     body?: object,
     header?: RawAxiosRequestHeaders,
     method: "GET" | "POST" | "UPDATE" | "DELETE"
-}
-
-export const apiRequest = async <T>(req: IRequest): Promise<ApiResult<T>> => {
-    try {
-        const result = await axios<ISuccessResponse<T>>({ baseURL: API_BASE_URL, url: req.url, data: req.body, headers: req.header, method: req.method })
-
-        return {
-            data: result.data.data,
-            error: null
-        }
-    } catch (error) {
-        return {
-            error: normalizeError(error),
-            data: null
-        }
-    }
 }
 
 export const apiClientWithHandler = async <T>(req: IRequest): Promise<ApiResult<T>> => {

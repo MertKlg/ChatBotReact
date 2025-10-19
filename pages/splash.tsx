@@ -22,24 +22,27 @@ export const SplashScreen = ({ navigation }: Props) => {
         // Get refresh token
         (async () => {
             try {
-                const refreshToken = await Keychain.getGenericPassword()
-                if (!refreshToken) {
-                    navigation.replace("SignIn")
-                    return
-                }
-
-                const profile = await apiClientWithHandler<IProfile>({ url: "/profile/get", method: "GET" })
-                if (profile.data) {
-                    setProfile(profile.data)
-                    navigation.replace("Home")
-                    return
-                }
-
+                await loadUserProfile()
             } catch (error) {
                 console.error(error)
             }
         })()
     }, [])
+
+    const loadUserProfile = async () => {
+        const result = await apiClientWithHandler<IProfile>({ url: '/profile/get', method: 'GET' })
+        console.log(result)
+        if (result.data) {
+            profileStorage.getState().setProfile(result.data)
+            navigation.replace('Home')
+            return
+        } else {
+            // Handle error
+            navigation.replace('SignIn')
+        }
+    }
+
+
     return (
         <View style={[styles.screen, { backgroundColor: theme.background, justifyContent: "center", alignItems: "center" }]}>
             <Image source={require("../assets/images/robot.png")} />

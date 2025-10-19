@@ -3,11 +3,9 @@ import { styles } from "../common/global-styles"
 import { useTheme } from "../common/theme"
 import AppTextInput from "../component/text-input/text-input"
 import { useState } from "react"
-import request, { apiClientWithHandler } from "../common/api"
+import { apiClientWithHandler } from "../common/api"
 import { ErrorDetails } from "../model/response"
 import { useNavigation } from "@react-navigation/native"
-import { Screen } from "react-native-screens"
-import Screens from "../common/screens"
 
 export const SignUpScreen = () => {
     const theme = useTheme()

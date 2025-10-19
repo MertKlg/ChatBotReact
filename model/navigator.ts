@@ -9,5 +9,6 @@ export type RootStackNavigatorList = {
     ChatDetail: {
         chat: IChat | undefined
     },
-    CreateChat: undefined
+    CreateChat: undefined,
+    Profile: undefined
 }

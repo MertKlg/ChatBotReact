@@ -7,3 +7,9 @@ export default interface IChat {
     updated_at: string,
     created_at: string
 }
+
+
+export interface CreateChatRequest {
+    title: string,
+    ai_models: [{ id: string }]
+}
