@@ -1,4 +1,5 @@
 import IChat from "./chat"
+import IProfile from "./profile"
 
 
 export type RootStackNavigatorList = {
@@ -6,9 +7,15 @@ export type RootStackNavigatorList = {
     Splash: undefined,
     SignIn: undefined,
     SignUp: undefined,
-    ChatDetail: {
+    CreateChat: undefined,
+    Profile: undefined,
+    UpdateProfile: {
+        profile: IProfile | undefined
+    },
+    ChatMessage: {
         chat: IChat | undefined
     },
-    CreateChat: undefined,
-    Profile: undefined
+    ChatDetail: {
+        chat: IChat | undefined
+    }
 }

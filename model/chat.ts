@@ -13,3 +13,14 @@ export interface CreateChatRequest {
     title: string,
     ai_models: [{ id: string }]
 }
+
+export interface GetChatMessage {
+
+}
+
+// MARK : CHAT_PARTICIPANTS
+export interface GetChatParticipantsDetails {
+    participant_name: string,
+    role: string,
+    participants_id: string
+}

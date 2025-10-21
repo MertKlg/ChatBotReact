@@ -31,7 +31,6 @@ export const SplashScreen = ({ navigation }: Props) => {
 
     const loadUserProfile = async () => {
         const result = await apiClientWithHandler<IProfile>({ url: '/profile/get', method: 'GET' })
-        console.log(result)
         if (result.data) {
             profileStorage.getState().setProfile(result.data)
             navigation.replace('Home')

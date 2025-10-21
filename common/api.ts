@@ -4,7 +4,7 @@ import normalizeError from "./error-handler";
 import * as Keychain from "react-native-keychain";
 import authStorage from "../storage/auth-storage";
 
-const API_BASE_URL = "http://127.0.0.1:3000"
+export const API_BASE_URL = "http://127.0.0.1:3000"
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,

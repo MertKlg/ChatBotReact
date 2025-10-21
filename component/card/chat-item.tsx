@@ -11,7 +11,7 @@ export default ({ chat, navigation }: { chat: IChat, navigation: NativeStackNavi
     const theme = useTheme()
     return (
         <TouchableOpacity onPress={() => {
-            navigation.navigate("ChatDetail", { chat: chat })
+            navigation.navigate("ChatMessage", { chat: chat })
         }}>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%", backgroundColor: theme.surface, borderRadius: 4, marginTop: 4, padding: 12 }}>
                 <View>

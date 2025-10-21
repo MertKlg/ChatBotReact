@@ -8,9 +8,12 @@ import { useFocusEffect } from "@react-navigation/native"
 import AppTextInput from "../../component/text-input/text-input"
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6"
 import { AppButton } from "../../component/button/default"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { RootStackNavigatorList } from "../../model/navigator"
 
+type Props = NativeStackScreenProps<RootStackNavigatorList, 'Profile'>
 
-export const ProfileScreen = () => {
+export const ProfileScreen = ({ navigation }: Props) => {
     const theme = useTheme()
     const [profile, setProfile] = useState<IProfile | undefined>()
     const dimension = useWindowDimensions()
@@ -49,7 +52,7 @@ export const ProfileScreen = () => {
                     <Text style={{ color: theme.textColor }} >{profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : undefined}</Text>
                 </View>
                 <View>
-                    <AppButton text="Update" onPress={() => { }} textStyle={{ styles: { textAlign: "center" } }} />
+                    <AppButton text="Update" onPress={() => { navigation.navigate('UpdateProfile', { profile: profile }) }} textStyle={{ styles: { textAlign: "center" } }} />
                 </View>
             </View>
         </View>
