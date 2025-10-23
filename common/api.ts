@@ -101,7 +101,6 @@ interface IRequest {
 export const apiClientWithHandler = async <T>(req: IRequest): Promise<ApiResult<T>> => {
     try {
         const res = await apiClient<ISuccessResponse<T>>({ url: req.url, method: req.method, headers: req.header, data: req.body })
-
         return {
             data: res.data.data,
             error: null
