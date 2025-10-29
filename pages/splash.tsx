@@ -14,18 +14,11 @@ import IProfile from "../model/profile"
 type Props = NativeStackScreenProps<RootStackNavigatorList, 'Splash'>
 export const SplashScreen = ({ navigation }: Props) => {
     const theme = useTheme()
-    const { setAccessToken } = authStorage()
-    const { setProfile } = profileStorage()
-    const dimension = useWindowDimensions()
 
     useEffect(() => {
-        // Get refresh token
         (async () => {
-            try {
-                await loadUserProfile()
-            } catch (error) {
-                console.error(error)
-            }
+            // Load user's profile
+            await loadUserProfile()
         })()
     }, [])
 
@@ -34,7 +27,6 @@ export const SplashScreen = ({ navigation }: Props) => {
         if (result.data) {
             profileStorage.getState().setProfile(result.data)
             navigation.replace('Home')
-            return
         } else {
             // Handle error
             navigation.replace('SignIn')

@@ -1,64 +1,67 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { ActivityIndicator, FlatList, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native"
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from "react-native"
 import { RootStackNavigatorList } from "../../model/navigator"
-import { useEffect, useState } from "react"
-import { API_BASE_URL, apiClientWithHandler } from "../../common/api"
-import IChat, { GetChatMessageResult } from "../../model/chat"
+import { useCallback, useState } from "react"
+import { apiClientWithHandler } from "../../common/api"
+import IChat, { GetChatMessageResult, PostChatMessageDTO } from "../../model/chat"
 import { styles } from "../../common/global-styles"
 import { useTheme } from "../../common/theme"
 import AppTextInput from "../../component/text-input/text-input"
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6"
-import { io, Socket } from "socket.io-client"
 import ChatMessageItem from "../../component/card/chat-message-item"
-import authStorage from "../../storage/auth-storage"
-
-
+import { useFocusEffect } from "@react-navigation/native"
+import socket from "../../common/socket"
+import { IErrorResponse, ISuccessResponse } from "../../model/response"
 
 type Props = NativeStackScreenProps<RootStackNavigatorList, 'ChatMessage'>
 
 export const ChatMessage = ({ route, navigation }: Props) => {
     const [messages, setMessages] = useState<GetChatMessageResult[]>([])
     const [loading, setLoading] = useState(true)
-    const [socket, setSocket] = useState<Socket>()
     const theme = useTheme()
     const [message, setMessage] = useState("")
-    const dimension = useWindowDimensions()
 
+    useFocusEffect(
+        useCallback(() => {
+            (async () => {
+                setLoading(true)
+                const chat = route.params.chat
+                if (chat)
+                    await getMessages(chat)
+            })()
 
-    useEffect(() => {
-        // Get user's specific chat messages
-        (async () => {
-            setLoading(true)
-            const chat = route.params.chat
-            if (chat)
-                await getMessages(chat)
-
-            setLoading(false)
-        })()
-    }, [route.params.chat])
+            return () => {
+                socket.off("sendMessageSuccess", handleSuccessMessage)
+                socket.disconnect()
+            }
+        }, [route.params.chat])
+    )
 
     const getMessages = async (chat: IChat) => {
         const result = await apiClientWithHandler<{ messages: GetChatMessageResult[] }>({ url: '/chat/' + chat.id + '/message', method: "GET" })
         if (result.data) {
             setMessages(result.data.messages)
-            createSocketConnection()
+            socket.connect()
+            socket.on('sendMessageSuccess', handleSuccessMessage)
+        } else {
+            // Handle error
         }
+        setLoading(false)
     }
 
-    const createSocketConnection = () => {
-        const socket = io(API_BASE_URL, { auth: { token: authStorage.getState().getAccessToken() } })
-        if (socket.connected) {
-            setSocket(socket)
-
-
-        }
-
+    const emitMessage = () => {
+        socket.emit("sendMessage", { content: message, chat_id: route.params.chat?.id } as PostChatMessageDTO)
     }
 
-    const disconnectSocket = () => {
-        if (socket)
-            socket.disconnect()
+    const handleSuccessMessage = (result: ISuccessResponse<GetChatMessageResult>) => {
+        setMessages([...messages, result.data])
     }
+
+    const handleErrorMessage = (result: IErrorResponse) => {
+        console.error(result.message, result.details)
+    }
+
+
 
     return (
         <KeyboardAvoidingView behavior={"padding"} keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 0} style={[styles.screen, { backgroundColor: theme.background }]} >
@@ -79,7 +82,7 @@ export const ChatMessage = ({ route, navigation }: Props) => {
                 </View>
 
                 <View style={style.buttonWrapper}>
-                    <TouchableOpacity style={[style.button, { backgroundColor: theme.secondary[500] }]}>
+                    <TouchableOpacity disabled={false} onPress={() => emitMessage()} style={[style.button, { backgroundColor: theme.secondary[500] }]}>
                         <FontAwesome6 name="paper-plane" color={theme.textColor} size={16} iconStyle="solid" />
                     </TouchableOpacity>
                 </View>

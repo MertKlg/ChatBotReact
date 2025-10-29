@@ -15,7 +15,6 @@ type Props = NativeStackScreenProps<RootStackNavigatorList, 'SignIn'>
 export const SignInScreen = ({ navigation }: Props) => {
     const theme = useTheme()
     const dimension = useWindowDimensions()
-    const { setAccessToken } = authStorage()
     const height = dimension.height
     const width = dimension.width
 
@@ -39,10 +38,8 @@ export const SignInScreen = ({ navigation }: Props) => {
             }
         } else {
             const tokens = res.data as { access_token: string, refresh_token: string }
-            setAccessToken(tokens.access_token)
+            authStorage.getState().setAccessToken(tokens.access_token)
             await Keychain.setGenericPassword("refresh_token", tokens.refresh_token, { accessible: Keychain.ACCESSIBLE.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY })
-            // If user sign in with successfully route home page
-            navigation.replace("Home")
         }
     }
 

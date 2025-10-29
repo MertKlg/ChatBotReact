@@ -14,6 +14,7 @@ export interface CreateChatRequest {
     ai_models: [{ id: string }]
 }
 
+// MARK : CHAT MESSAGES
 export interface GetChatMessageResult {
     message_id: string,
     content: string,
@@ -22,6 +23,12 @@ export interface GetChatMessageResult {
     sender_id: string,
     sender_name: string
 }
+
+export interface PostChatMessageDTO {
+    content: string,
+    chat_id: string
+}
+
 
 // MARK : CHAT_PARTICIPANTS
 export interface GetChatParticipantsDetails {
