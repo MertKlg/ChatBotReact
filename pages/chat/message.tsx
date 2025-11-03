@@ -53,8 +53,8 @@ export const ChatMessage = ({ route, navigation }: Props) => {
         socket.emit("sendMessage", { content: message, chat_id: route.params.chat?.id } as PostChatMessageDTO)
     }
 
-    const handleSuccessMessage = (result: ISuccessResponse<GetChatMessageResult>) => {
-        setMessages([...messages, result.data])
+    const handleSuccessMessage = (result: ISuccessResponse<GetChatMessageResult[]>) => {
+
     }
 
     const handleErrorMessage = (result: IErrorResponse) => {
