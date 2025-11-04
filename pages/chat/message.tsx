@@ -32,6 +32,7 @@ export const ChatMessage = ({ route, navigation }: Props) => {
 
             return () => {
                 socket.off("sendMessageSuccess", handleSuccessMessage)
+                socket.off('sendMessageError', handleErrorMessage)
                 socket.disconnect()
             }
         }, [route.params.chat])
@@ -43,6 +44,7 @@ export const ChatMessage = ({ route, navigation }: Props) => {
             setMessages(result.data.messages)
             socket.connect()
             socket.on('sendMessageSuccess', handleSuccessMessage)
+            socket.on('sendMessageError', handleErrorMessage)
         } else {
             // Handle error
         }
@@ -53,8 +55,10 @@ export const ChatMessage = ({ route, navigation }: Props) => {
         socket.emit("sendMessage", { content: message, chat_id: route.params.chat?.id } as PostChatMessageDTO)
     }
 
-    const handleSuccessMessage = (result: ISuccessResponse<GetChatMessageResult[]>) => {
-
+    const handleSuccessMessage = (result: ISuccessResponse<{ messages: GetChatMessageResult[] }>) => {
+        console.log(result.data.messages)
+        setMessages((e) => e.concat(result.data.messages))
+        setMessage("")
     }
 
     const handleErrorMessage = (result: IErrorResponse) => {
